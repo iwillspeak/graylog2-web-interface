@@ -8,13 +8,31 @@ var EditAlarmCallbackButton = require('./EditAlarmCallbackButton');
 
 var AlarmCallback = React.createClass({
     mixins: [PermissionsMixin],
-    render() {
+    _formatActionButtons() {
         var alarmCallback = this.props.alarmCallback;
-        var humanReadableType = this.props.types[alarmCallback.type].name;
         var editAlarmCallbackButton = (this.isPermitted(this.props.permissions, ["streams:edit:"+this.props.streamId]) ?
             <EditAlarmCallbackButton alarmCallback={alarmCallback} types={this.props.types} streamId={this.props.streamId} onUpdate={this.props.updateAlarmCallback} /> : "");
         var deleteAlarmCallbackButton = (this.isPermitted(this.props.permissions, ["streams:edit:"+this.props.streamId]) ?
             <DeleteAlarmCallbackButton alarmCallback={alarmCallback} onClick={this.props.deleteAlarmCallback} /> : "");
+
+        return (
+            <div className="col-md-3" style={{textAlign: "right"}}>
+                {' '}
+                {editAlarmCallbackButton}
+                {' '}
+                {deleteAlarmCallbackButton}
+            </div>
+        );
+    },
+    getDefaultProps() {
+        return {
+            hideButtons: false
+        };
+    },
+    render() {
+        var alarmCallback = this.props.alarmCallback;
+        var humanReadableType = this.props.types[alarmCallback.type].name;
+        var actionButtons = (this.props.hideButtons ? null : this._formatActionButtons());
         return (
             <div className="alert-callback" data-destination-id={alarmCallback.id}>
                 <div className="row" style={{marginBottom: 0}}>
@@ -27,12 +45,7 @@ var AlarmCallback = React.createClass({
                         Executed once per triggered alert condition.
                     </div>
 
-                    <div className="col-md-3" style={{textAlign: "right"}}>
-                        {' '}
-                        {editAlarmCallbackButton}
-                        {' '}
-                        {deleteAlarmCallbackButton}
-                    </div>
+                    {actionButtons}
                 </div>
 
                 <div className="row" style={{marginBottom: 0}}>
